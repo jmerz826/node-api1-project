@@ -17,8 +17,13 @@ server.get('/', (req, res) => {
 server.post('/api/users', async (req, res) => {
     try {
         const { id, name, bio } = req.body;
-        const newUser = await User.insert({ id, name, bio });
-        res.status(201).json(newUser)
+        if (!name || !bio) {
+            res.status(400).json({message: 'Please provide name and bio for the user'})
+        } else {
+            const newUser = await User.insert({ id, name, bio });
+            res.status(201).json(newUser)
+        }
+        
     } catch (err){
         res.status(500).json({message: err.message})
     }
@@ -41,7 +46,7 @@ server.get('/api/users/:id', async (req, res) => {
         const user = await User.findById(id);
 
         if (!user) {
-            res.status(404).json({message: 'no user'})
+            res.status(404).json({message: 'The user with the specified ID does not exist'})
         } else {
             res.status(200).json(user)
         }
@@ -55,7 +60,7 @@ server.delete('/api/users/:id', async (req, res) => {
     try {
         const deletedUser = await User.remove(req.params.id);
         if (!deletedUser) {
-            res.status(404).json({message: 'no user with that ID'})
+            res.status(404).json({message: 'The user with the specified ID does not exist'})
         } else {
             res.json(deletedUser)
         }
@@ -71,11 +76,13 @@ server.put('/api/users/:id', async (req, res) => {
 
     try {
         const updatedUser = await User.update(id, { name, bio });
-        if (!updatedUser) {
-            res.status(404).json({message: `user ${id} not here`})
-        } else {
-            res.json(updatedUser)
-        }
+        if (!name || !bio) {
+                res.status(400).json({message: "Please provide name and bio for the user"})
+            } else if (!updatedUser){
+                res.status(404).json({ message: 'The user with the specified ID does not exist' })
+            }else {
+                res.json(updatedUser)
+            } 
     } catch (err) {
         res.status(500).json({message: err.message})
     }
