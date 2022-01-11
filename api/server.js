@@ -1,4 +1,5 @@
 const express = require('express');
+const { del } = require('express/lib/application');
 const User = require('./users/model');
 
 // INSTANCE OF EXPRESS APP
@@ -43,6 +44,37 @@ server.get('/api/users/:id', async (req, res) => {
             res.status(404).json({message: 'no user'})
         } else {
             res.status(200).json(user)
+        }
+    } catch (err) {
+        res.status(500).json({message: err.message})
+    }
+})
+
+// DELETE
+server.delete('/api/users/:id', async (req, res) => {
+    try {
+        const deletedUser = await User.remove(req.params.id);
+        if (!deletedUser) {
+            res.status(404).json({message: 'no user with that ID'})
+        } else {
+            res.json(deletedUser)
+        }
+    } catch (err) {
+        res.status(500).json({message: err.message})
+    }
+})
+
+// PUT
+server.put('/api/users/:id', async (req, res) => {
+    const { id } = req.params;
+    const { name, bio } = req.body;
+
+    try {
+        const updatedUser = await User.update(id, { name, bio });
+        if (!updatedUser) {
+            res.status(404).json({message: `user ${id} not here`})
+        } else {
+            res.json(updatedUser)
         }
     } catch (err) {
         res.status(500).json({message: err.message})
