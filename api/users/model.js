@@ -10,6 +10,7 @@ function getId() {
 const initializeUsers = () => ([
   { id: getId(), name: 'Ed Carter', bio: 'hero' },
   { id: getId(), name: 'Mary Edwards', bio: 'super hero' },
+  {id: "6", name: 'John', bio: 'testt'}
 ])
 
 // FAKE IN-MEMORY USERS "TABLE"
